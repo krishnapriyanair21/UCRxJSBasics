@@ -11,7 +11,7 @@ const observable = new Observable((subscriber) => {
 
   const id = setInterval(() => {
     subscriber.next(count);
-    subscriber.complete();
+    //subscriber.complete(); // for demo sake
     count += 1;
   }, 1000);
 
@@ -20,12 +20,12 @@ const observable = new Observable((subscriber) => {
     clearInterval(id);
   };
 });
-console.log("before");
-observable.subscribe(observer);
-console.log("after");
-// // works the same as above
-// observable.subscribe(
-//     value => console.log('next', value),
-//     error => console.log('error', error),
-//     () => console.log('complete!')
-// );
+
+const subscription = observable.subscribe(observer);
+
+const subscription2 = observable.subscribe(observer);
+
+subscription.add(subscription2);
+setTimeout(() => {
+  subscription.unsubscribe();
+}, 3500);
