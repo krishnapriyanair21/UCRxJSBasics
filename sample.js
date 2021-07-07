@@ -1,23 +1,54 @@
-/* Ignore unneeded values with filter */
-import { of, fromEvent} from "rxjs";
-import { map, filter } from 'rxjs/operators';
+import { fromEvent } from "rxjs";
+import { map } from "rxjs/operators";
 
-// filter numbers
-of(1, 2, 3, 4, 5).pipe(
-  filter(value => value > 2)
-).subscribe(console.log);
+// helpers
+function calculateScrollPercent(element) {
+  const {
+    scrollTop,
+    scrollHeight,
+    clientHeight
+  } = element;
+  return (scrollTop / (scrollHeight - clientHeight)) * 100;
+}
 
-const keyup$ = fromEvent(document, 'keyup');
-const keycode$ = keyup$.pipe(
-  map(event=> event.code)
+// elems
+const progressBar = document.querySelector(
+  '.progress-bar'
+)
+
+// streams
+const scroll$ = fromEvent(document, 'scroll');
+const progress$ = scroll$.pipe(
+  // percent progress
+  map(({ target }) => calculateScrollPercent(
+    target.scrollingElement
+  ))
 );
-// filter enter key
-const enter$ = keycode$.pipe(
-  filter(code => code === 'Enter')
-);
-enter$.subscribe(console.log);
-keycode$.subscribe(console.log);
 
+progress$.subscribe(percent => {
+  console.log(percent)
+  progressBar.style.width = `${percent}%`
+});
+
+// /* Ignore unneeded values with filter */
+// import { of, fromEvent } from "rxjs";
+// import { map, filter } from "rxjs/operators";
+
+// // filter numbers
+// of(1, 2, 3, 4, 5)
+//   .pipe(filter((value) => value > 2))
+//   .subscribe(console.log);
+
+// const keyup$ = fromEvent(document, 'keyup');
+// const keycode$ = keyup$.pipe(
+//   map(event=> event.code)
+// );
+// // filter enter key
+// const enter$ = keycode$.pipe(
+//   filter(code => code === 'Enter')
+// );
+// enter$.subscribe(console.log);
+// keycode$.subscribe(console.log);
 
 /* Introduction to marble diagrams */
 
